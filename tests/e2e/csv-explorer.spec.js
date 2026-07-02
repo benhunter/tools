@@ -31,7 +31,7 @@ test('landing page lists available HTML apps', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'Scripts Browser Tools' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Open CSV Explorer' })).toHaveAttribute('href', './csv-explorer.html');
+  await expect(page.getByRole('link', { name: 'Open CSV Explorer' })).toHaveAttribute('href', './offline/csv-explorer.html');
   await expect(page.getByRole('link', { name: 'Open File Manager' })).toHaveAttribute('href', './file-manager.html');
   await expect(page.getByRole('link', { name: 'Open JSON Explorer' })).toHaveAttribute('href', './json-explorer.html');
 });

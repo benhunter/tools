@@ -73,4 +73,5 @@ Sample CSV: [`csv-explorer-sample.csv`](csv-explorer-sample.csv)
 
 | Feature | Status | Notes |
 | --- | --- | --- |
+| Offline CSV Explorer | Completed | Build and commit a self-contained html version of CSV Explorer for offline use.
 | Deploy to GitHub Pages | Planned | Setup project, build, and deployment configuration to static web assets on GitHub Pages.

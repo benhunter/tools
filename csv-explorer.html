@@ -68,7 +68,7 @@
 </head>
 <body>
   <header>
-    <h1>CSV Explorer <span class="version pill muted">v1.0.0</span></h1>
+    <h1>CSV Explorer <span class="version pill muted">v1.1.0</span></h1>
     <div class="muted">Upload a CSV to list columns, compute stats, and browse/sort the entire dataset locally in your browser.</div>
   </header>
 
@@ -103,6 +103,7 @@
     </div>
   </section>
 
+  <!-- TODO remove this redundant section -->
   <section class="card" id="columnsCard" style="display:none;">
     <strong>Columns</strong>
     <ul id="columnsList"></ul>
@@ -208,7 +209,6 @@ import {
   const messageEl = document.getElementById('message');
 
   const summaryCard = document.getElementById('summaryCard');
-  const columnsCard = document.getElementById('columnsCard');
   const allStatsCard = document.getElementById('allStatsCard');
   const profileCard = document.getElementById('profileCard');
   const dataCard = document.getElementById('dataCard');
@@ -307,7 +307,6 @@ import {
       initColumnFilterControls(headers);
 
       summaryCard.style.display = '';
-      columnsCard.style.display = '';
       allStatsCard.style.display = '';
       profileCard.style.display = '';
       dataCard.style.display = '';
@@ -329,7 +328,6 @@ import {
       statusEl.textContent = 'Load failed';
       showError(err?.message || String(err));
       summaryCard.style.display = 'none';
-      columnsCard.style.display = 'none';
       allStatsCard.style.display = 'none';
       profileCard.style.display = 'none';
       dataCard.style.display = 'none';

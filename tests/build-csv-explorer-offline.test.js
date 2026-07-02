@@ -15,7 +15,7 @@ test('buildCsvExplorerOffline generates a self-contained CSV Explorer page', asy
 
   assert.equal(builtPath, outputPath);
   assert.match(html, /<h1>CSV Explorer/);
-  assert.match(html, /v1\.0\.0/);
+  assert.match(html, /v1\.1\.0/);
   assert.doesNotMatch(html, /from\s+['"]\.\/csv-explorer-core\.js['"]/);
   assert.match(html, /function parseCsv\(text, delim\)/);
   assert.match(html, /function summarizeColumn\(column, rows, nullSet = new Set\(\)\)/);

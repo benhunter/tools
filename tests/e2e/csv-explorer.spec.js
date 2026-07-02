@@ -44,7 +44,7 @@ test('generated offline CSV Explorer opens from a file URL', async ({ page }) =>
 
   await buildCsvExplorerOffline({ outputPath });
   await page.goto(pathToFileURL(outputPath).href);
-  await expect(page.locator('header')).toContainText('v1.0.0');
+  await expect(page.locator('header')).toContainText('v1.1.0');
   await page.locator('#csvFile').setInputFiles(path.join(process.cwd(), 'tests/fixtures/people.csv'));
 
   await expect(page.locator('#status')).toContainText('Loaded: people.csv');
@@ -55,7 +55,7 @@ test('generated offline CSV Explorer opens from a file URL', async ({ page }) =>
 
 test('loads a CSV and supports the main browsing journey', async ({ page }) => {
   await page.goto('/csv-explorer.html');
-  await expect(page.locator('header')).toContainText('v1.0.0');
+  await expect(page.locator('header')).toContainText('v1.1.0');
   await page.locator('#csvFile').setInputFiles(path.join(process.cwd(), 'tests/fixtures/people.csv'));
 
   await expect(page.locator('#status')).toContainText('Loaded: people.csv');

@@ -2,6 +2,8 @@
 
 ## Browser Tools
 
+Published site: [`https://benhunter.github.io/tools/`](https://benhunter.github.io/tools/)
+
 - [`file-manager.html`](file-manager.html) - Standalone browser file vault that stores, downloads, and deletes files using IndexedDB.
 - [`csv-explorer.html`](csv-explorer.html) - Browser-based CSV explorer for loading local CSV files, searching and sorting rows, and calculating per-column statistics. Because it imports [`csv-explorer-core.js`](csv-explorer-core.js) as a native ES module, open it through a local HTTP server instead of a `file://` URL during local development: run `pnpm install`, then `pnpm start`, then open the Vite localhost landing page and choose CSV Explorer. For offline local use, run `pnpm build:csv-explorer:offline` and open `offline/csv-explorer.html` directly from disk.
 - [`json-explorer.html`](json-explorer.html) - Browser-based JSON explorer for inspecting JSON with searchable tree and table views.
@@ -74,4 +76,11 @@ Sample CSV: [`csv-explorer-sample.csv`](csv-explorer-sample.csv)
 | Feature | Status | Notes |
 | --- | --- | --- |
 | Offline CSV Explorer | Completed | Build and commit a self-contained html version of CSV Explorer for offline use.
-| Deploy to GitHub Pages | Planned | Setup project, build, and deployment configuration to static web assets on GitHub Pages.
+| Deploy to GitHub Pages | Completed | Deploys `main` to `https://benhunter.github.io/tools/` with GitHub Actions.
+
+## Deployment
+
+GitHub Pages deploys from `main` using the workflow in
+`.github/workflows/pages.yml`. The workflow installs dependencies, regenerates
+the committed offline CSV Explorer build, runs the Node test suite, verifies
+`offline/csv-explorer.html` is in sync, and publishes the repository root.

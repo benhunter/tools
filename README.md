@@ -8,9 +8,9 @@ Published site: [`https://benhunter.github.io/tools/`](https://benhunter.github.
 - [`csv-explorer.html`](csv-explorer.html) - Browser-based CSV explorer for loading local CSV files, searching and sorting rows, and calculating per-column statistics. Because it imports [`csv-explorer-core.js`](csv-explorer-core.js) as a native ES module, open it through a local HTTP server instead of a `file://` URL during local development: run `pnpm install`, then `pnpm start`, then open the Vite localhost landing page and choose CSV Explorer. For offline local use, run `pnpm build:csv-explorer:offline` and open `offline/csv-explorer.html` directly from disk.
 - [`json-explorer.html`](json-explorer.html) - Browser-based JSON explorer for inspecting JSON with searchable tree and table views.
 
-## CSV Explorer
+# CSV Explorer
 
-### CSV Explorer offline build
+## CSV Explorer Offline Build
 
 Run `pnpm build:csv-explorer:offline` to generate a single-page offline build at
 `offline/csv-explorer.html`. The generated file inlines the shared CSV
@@ -18,7 +18,7 @@ Explorer core code, so it can be opened directly with a `file://` URL without
 starting the Vite server. The offline build is committed; rerun the build
 command after changing CSV Explorer source files.
 
-### CSV Explorer filter semantics
+## CSV Explorer Filter Semantics
 
 The CSV Explorer core helpers apply table operations in this order: global search,
 column filters, sorting, then row limit. Global search performs a
@@ -30,7 +30,7 @@ supersede include filters, and a row is rejected if any exclude filter matches.
 Across different columns, filters are ANDed together, so every filtered column
 must pass. Missing or unknown cell values are treated as empty strings.
 
-### CSV Explorer roadmap
+## CSV Explorer Roadmap
 
 | Feature | Status | Notes |
 | --- | --- | --- |
@@ -38,8 +38,14 @@ must pass. Missing or unknown cell values are treated as empty strings.
 | Copy visible table as CSV | Complete | Copies the table headers and currently visible rows as CSV. |
 | Copy visible table as JSON | Complete | Copies the table headers and currently visible rows as JSON. |
 | Save visible table as CSV file | Planned | Saves the table headers and currently visible rows as a CSV file. |
+| Filter shortcut buttons beside Column Values | Planned | Add include/exclude filter buttons beside each value in the "Column Profile - Top Values" table. The filter should be added to the current set of filters. |
+| Paste from CSV | Planned | Paste CSV content from the clipboard instead of opening a file to import data. |
+| Paste from Markdown table | Planned | Paste Markdown table content from the clipboard instead of opening a file to import data. |
+| Paste from JSON | Planned | Paste JSON content from the clipboard instead of opening a file to import data. Parse forgivingly; allow new columns liberally as they appear in objects. |
 
-### CSV Explorer manual QA checklist
+## CSV Explorer Manual QA checklist
+
+> TODO: review this list against the journey tests.
 
 Automated coverage for the core parser/filter helpers and the main browser
 journey lives in [`tests/csv-explorer-core.test.js`](tests/csv-explorer-core.test.js)
@@ -47,7 +53,7 @@ and [`tests/e2e/csv-explorer.spec.js`](tests/e2e/csv-explorer.spec.js). Keep thi
 manual checklist focused on visual checks and interactions that are not covered
 by those automated tests.
 
-Sample CSV: [`csv-explorer-sample.csv`](csv-explorer-sample.csv)
+> Sample CSV: [`csv-explorer-sample.csv`](csv-explorer-sample.csv)
 
 1. Start the local server with `pnpm start`, open the landing page, and choose
    **CSV Explorer**.
@@ -71,14 +77,14 @@ Sample CSV: [`csv-explorer-sample.csv`](csv-explorer-sample.csv)
    search text, sort order, row limit, selected profile, statistics, and row
    data reset for the new load.
 
-## Roadmap
+# Roadmap
 
 | Feature | Status | Notes |
 | --- | --- | --- |
 | Offline CSV Explorer | Completed | Build and commit a self-contained html version of CSV Explorer for offline use.
 | Deploy to GitHub Pages | Completed | Deploys `main` to `https://benhunter.github.io/tools/` with GitHub Actions.
 
-## Deployment
+# Deployment
 
 GitHub Pages deploys from `main` using the workflow in
 `.github/workflows/pages.yml`. The workflow installs dependencies, regenerates

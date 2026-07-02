@@ -30,6 +30,13 @@
     }
     .card h2 { font-size: 16px; margin: 0 0 6px 0; }
     .card p { margin: 0 0 10px 0; }
+    .offline-use {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(127,127,127,.25);
+      font-size: 14px;
+    }
+    .offline-use p { margin-bottom: 6px; }
     a { color: LinkText; }
     .open-link { font-weight: 700; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
@@ -47,6 +54,10 @@
         <h2>CSV Explorer</h2>
         <p class="muted">Load a local CSV file, browse rows, search, sort, and calculate per-column statistics.</p>
         <a class="open-link" href="./offline/csv-explorer.html">Open CSV Explorer</a>
+        <div class="offline-use">
+          <p class="muted">Want to use it without internet?</p>
+          <a href="./offline/csv-explorer.html" download="csv-explorer.html">Download single-file version</a>
+        </div>
       </article>
 
       <article class="card">

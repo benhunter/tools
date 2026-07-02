@@ -3,10 +3,18 @@
 ## Browser Tools
 
 - [`file-manager.html`](file-manager.html) - Standalone browser file vault that stores, downloads, and deletes files using IndexedDB.
-- [`csv-explorer.html`](csv-explorer.html) - Browser-based CSV explorer for loading local CSV files, searching and sorting rows, and calculating per-column statistics. Because it imports [`csv-explorer-core.js`](csv-explorer-core.js) as a native ES module, open it through a local HTTP server instead of a `file://` URL during local use: run `pnpm install`, then `pnpm start`, then open the Vite localhost landing page and choose CSV Explorer.
+- [`csv-explorer.html`](csv-explorer.html) - Browser-based CSV explorer for loading local CSV files, searching and sorting rows, and calculating per-column statistics. Because it imports [`csv-explorer-core.js`](csv-explorer-core.js) as a native ES module, open it through a local HTTP server instead of a `file://` URL during local development: run `pnpm install`, then `pnpm start`, then open the Vite localhost landing page and choose CSV Explorer. For offline local use, run `pnpm build:csv-explorer:offline` and open `offline/csv-explorer.html` directly from disk.
 - [`json-explorer.html`](json-explorer.html) - Browser-based JSON explorer for inspecting JSON with searchable tree and table views.
 
 ## CSV Explorer
+
+### CSV Explorer offline build
+
+Run `pnpm build:csv-explorer:offline` to generate a single-page offline build at
+`offline/csv-explorer.html`. The generated file inlines the shared CSV
+Explorer core code, so it can be opened directly with a `file://` URL without
+starting the Vite server. The offline build is committed; rerun the build
+command after changing CSV Explorer source files.
 
 ### CSV Explorer filter semantics
 
@@ -61,3 +69,8 @@ Sample CSV: [`csv-explorer-sample.csv`](csv-explorer-sample.csv)
    search text, sort order, row limit, selected profile, statistics, and row
    data reset for the new load.
 
+## Roadmap
+
+| Feature | Status | Notes |
+| --- | --- | --- |
+| Deploy to GitHub Pages | Planned | Setup project, build, and deployment configuration to static web assets on GitHub Pages.

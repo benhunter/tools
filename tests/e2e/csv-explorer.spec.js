@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+import { buildCsvExplorerOffline } from '../../scripts/build-csv-explorer-offline.mjs';
 
 
 async function loadPeopleCsv(page) {
@@ -33,8 +36,23 @@ test('landing page lists available HTML apps', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Open JSON Explorer' })).toHaveAttribute('href', './json-explorer.html');
 });
 
+test('generated offline CSV Explorer opens from a file URL', async ({ page }) => {
+  const outputPath = path.join(process.cwd(), 'offline', 'csv-explorer.html');
+
+  await buildCsvExplorerOffline({ outputPath });
+  await page.goto(pathToFileURL(outputPath).href);
+  await expect(page.locator('header')).toContainText('v1.0.0');
+  await page.locator('#csvFile').setInputFiles(path.join(process.cwd(), 'tests/fixtures/people.csv'));
+
+  await expect(page.locator('#status')).toContainText('Loaded: people.csv');
+  await expect(page.locator('#rowCount')).toHaveText('4');
+  await expect(page.locator('#tableStatus')).toHaveText('Rendered');
+  await expect(page.locator('#dataWrap tbody tr')).toHaveCount(4);
+});
+
 test('loads a CSV and supports the main browsing journey', async ({ page }) => {
   await page.goto('/csv-explorer.html');
+  await expect(page.locator('header')).toContainText('v1.0.0');
   await page.locator('#csvFile').setInputFiles(path.join(process.cwd(), 'tests/fixtures/people.csv'));
 
   await expect(page.locator('#status')).toContainText('Loaded: people.csv');

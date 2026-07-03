@@ -686,7 +686,7 @@ function rowsToJson(headers = [], rows = []) {
         const nullSet = getNullTokenSet();
         const profile = profileOneColumn(col, rows, nullSet);
         renderProfileKpis(col, profile);
-        renderTopValues(profile.topValues);
+        renderTopValues(col, profile.topValues);
         profileStatusEl.textContent = 'Done';
       } catch (err) {
         profileStatusEl.textContent = 'Error';
@@ -913,18 +913,22 @@ function rowsToJson(headers = [], rows = []) {
     }
 
     const mode = selectedFilterMode();
+    addColumnFilter({ column, mode, value });
+    filterValueEl.value = '';
+    updateAddFilterButton();
+  }
+
+  function addColumnFilter({ column, mode, value }) {
+    const normalizedMode = mode === 'exclude' ? 'exclude' : 'include';
     const existing = columnFilters[column] || [];
-    const normalizedValue = value.toLowerCase();
-    const alreadyExists = existing.some(f => f.mode === mode && String(f.value).toLowerCase() === normalizedValue);
+    const normalizedValue = String(value).toLowerCase();
+    const alreadyExists = existing.some(f => f.mode === normalizedMode && String(f.value).toLowerCase() === normalizedValue);
 
     if (!alreadyExists) {
-      columnFilters[column] = [...existing, { mode, value }];
+      columnFilters[column] = [...existing, { mode: normalizedMode, value }];
       renderActiveFilters();
       applyAndRenderTable();
     }
-
-    filterValueEl.value = '';
-    updateAddFilterButton();
   }
 
   function removeColumnFilter(column, index) {
@@ -1344,7 +1348,7 @@ function rowsToJson(headers = [], rows = []) {
     }
   }
 
-  function renderTopValues(topValues) {
+  function renderTopValues(column, topValues) {
     topValuesWrapEl.innerHTML = '';
     if (!topValues || topValues.length === 0) {
       topValuesWrapEl.innerHTML = '<div class="muted" style="margin-top:8px;">No non-null values found.</div>';
@@ -1353,7 +1357,7 @@ function rowsToJson(headers = [], rows = []) {
 
     const table = document.createElement('table');
     const thead = document.createElement('thead');
-    thead.innerHTML = `<tr><th>Value</th><th>Count</th><th>% of non-null</th></tr>`;
+    thead.innerHTML = `<tr><th>Value</th><th>Count</th><th>% of non-null</th><th>Actions</th></tr>`;
     table.appendChild(thead);
 
     const tbody = document.createElement('tbody');
@@ -1365,9 +1369,32 @@ function rowsToJson(headers = [], rows = []) {
       tdCount.textContent = formatInt(tv.count);
       const tdPct = document.createElement('td');
       tdPct.textContent = formatPct(tv.pct);
+      const tdActions = document.createElement('td');
+      const actionWrap = document.createElement('div');
+      actionWrap.className = 'row';
+      actionWrap.style.gap = '6px';
+
+      const includeBtn = document.createElement('button');
+      includeBtn.type = 'button';
+      includeBtn.className = 'btn';
+      includeBtn.textContent = 'Include';
+      includeBtn.title = `Include ${tv.value} in ${column} filters`;
+      includeBtn.addEventListener('click', () => addColumnFilter({ column, mode: 'include', value: tv.value }));
+
+      const excludeBtn = document.createElement('button');
+      excludeBtn.type = 'button';
+      excludeBtn.className = 'btn';
+      excludeBtn.textContent = 'Exclude';
+      excludeBtn.title = `Exclude ${tv.value} from ${column} filters`;
+      excludeBtn.addEventListener('click', () => addColumnFilter({ column, mode: 'exclude', value: tv.value }));
+
+      actionWrap.appendChild(includeBtn);
+      actionWrap.appendChild(excludeBtn);
+      tdActions.appendChild(actionWrap);
       tr.appendChild(tdVal);
       tr.appendChild(tdCount);
       tr.appendChild(tdPct);
+      tr.appendChild(tdActions);
       tbody.appendChild(tr);
     }
     table.appendChild(tbody);

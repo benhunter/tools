@@ -122,6 +122,28 @@ test('applies include and exclude column filters from the builder', async ({ pag
   await expect(page.locator('#dataWrap tbody')).not.toContainText('Carol');
 });
 
+test('applies include and exclude column filters from profile top value shortcuts', async ({ page }) => {
+  await loadPeopleCsv(page);
+
+  await page.locator('#profileColumn').selectOption('team');
+  await expect(page.locator('#profileStatus')).toHaveText('Done');
+  await page.locator('#topValuesWrap tbody tr').filter({ hasText: 'blue' }).getByRole('button', { name: /^Include$/ }).click();
+
+  await expect(page.locator('#activeFilterCount')).toHaveText('1');
+  await expect(page.locator('#shownCount')).toHaveText('3');
+  await expectVisibleDataRows(page, ['Bob', 'Carol', 'Dave']);
+  await expect(page.locator('#dataWrap tbody')).not.toContainText('Alice');
+
+  await page.locator('#profileColumn').selectOption('note');
+  await expect(page.locator('#profileStatus')).toHaveText('Done');
+  await page.locator('#topValuesWrap tbody tr').filter({ hasText: 'plain' }).getByRole('button', { name: /^Exclude$/ }).click();
+
+  await expect(page.locator('#activeFilterCount')).toHaveText('2');
+  await expect(page.locator('#shownCount')).toHaveText('2');
+  await expectVisibleDataRows(page, ['Bob', 'Carol']);
+  await expect(page.locator('#dataWrap tbody')).not.toContainText('Dave');
+});
+
 test('supports multiple same-column filters, removal, and clearing', async ({ page }) => {
   await loadPeopleCsv(page);
 

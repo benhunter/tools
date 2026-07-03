@@ -38,7 +38,7 @@ must pass. Missing or unknown cell values are treated as empty strings.
 | Copy visible table as CSV | Complete | Copies the table headers and currently visible rows as CSV. |
 | Copy visible table as JSON | Complete | Copies the table headers and currently visible rows as JSON. |
 | Save visible table as CSV file | Planned | Saves the table headers and currently visible rows as a CSV file. |
-| Filter shortcut buttons beside Column Values | Planned | Add include/exclude filter buttons beside each value in the "Column Profile - Top Values" table. The filter should be added to the current set of filters. |
+| Filter shortcut buttons beside Column Values | Complete | Add include/exclude filter buttons beside each value in the "Column Profile - Top Values" table. The filter should be added to the current set of filters. |
 | Paste from CSV | Planned | Paste CSV content from the clipboard instead of opening a file to import data. |
 | Paste from Markdown table | Planned | Paste Markdown table content from the clipboard instead of opening a file to import data. |
 | Paste from JSON | Planned | Paste JSON content from the clipboard instead of opening a file to import data. Parse forgivingly; allow new columns liberally as they appear in objects. |

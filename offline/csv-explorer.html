@@ -68,7 +68,7 @@
 </head>
 <body>
   <header>
-    <h1>CSV Explorer <span class="version pill muted">v1.1.0</span></h1>
+    <h1>CSV Explorer <span class="version pill muted">v1.2.0</span></h1>
     <div class="muted">Upload a CSV to list columns, compute stats, and browse/sort the entire dataset locally in your browser.</div>
   </header>
 
@@ -149,7 +149,7 @@
         <option value="5000">5,000</option>
         <option value="20000">20,000</option>
       </select>
-      <span class="pill muted">Showing <span id="shownCount">0</span></span>
+      <span class="pill muted">Showing <span id="shownCount">0 of 0</span></span>
       <span class="pill muted">Sort: <span id="dataSortLabel">none</span></span>
       <button id="copyMarkdownBtn" class="btn" type="button" disabled>Copy Markdown</button>
       <span id="copyMarkdownStatus" class="pill muted" aria-live="polite">Nothing copied</span>
@@ -733,9 +733,13 @@ function rowsToJson(headers = [], rows = []) {
     });
 
     currentVisibleRows = dataRows;
-    shownCountEl.textContent = String(dataRows.length);
+    updateShownCount(dataRows.length);
     resetCopyStatuses();
     renderDataTableChunked(headers, dataRows);
+  }
+
+  function updateShownCount(displayedCount) {
+    shownCountEl.textContent = `${formatInt(displayedCount)} of ${formatInt(rows.length)}`;
   }
 
   function renderDataTableChunked(headers, dataRows) {

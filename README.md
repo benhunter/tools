@@ -15,8 +15,15 @@ Published site: [`https://benhunter.github.io/tools/`](https://benhunter.github.
 Run `pnpm build:csv-explorer:offline` to generate a single-page offline build at
 `offline/csv-explorer.html`. The generated file inlines the shared CSV
 Explorer core code, so it can be opened directly with a `file://` URL without
-starting the Vite server. The offline build is committed; rerun the build
-command after changing CSV Explorer source files.
+starting the Vite server. This build is deterministic and does not change the
+CSV Explorer version.
+
+Use `pnpm bump` or `pnpm bump:patch` to increment the patch version, `pnpm
+bump:minor` to increment the minor version, and `pnpm bump:major` to increment
+the major version. Bump commands update `csv-explorer-version.js` and regenerate
+`offline/csv-explorer.html`. The offline build is committed; rerun the
+deterministic build command after source-only changes, or a bump command for a
+versioned release.
 
 ## CSV Explorer Filter Semantics
 

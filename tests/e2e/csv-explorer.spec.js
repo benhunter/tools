@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { CSV_EXPLORER_VERSION } from '../../csv-explorer-version.js';
 import { buildCsvExplorerOffline } from '../../scripts/build-csv-explorer-offline.mjs';
 
 
@@ -44,7 +45,7 @@ test('generated offline CSV Explorer opens from a file URL', async ({ page }) =>
 
   await buildCsvExplorerOffline({ outputPath });
   await page.goto(pathToFileURL(outputPath).href);
-  await expect(page.locator('header')).toContainText('v1.2.0');
+  await expect(page.locator('header')).toContainText(`v${CSV_EXPLORER_VERSION}`);
   await page.locator('#csvFile').setInputFiles(path.join(process.cwd(), 'tests/fixtures/people.csv'));
 
   await expect(page.locator('#status')).toContainText('Loaded: people.csv');
@@ -55,7 +56,7 @@ test('generated offline CSV Explorer opens from a file URL', async ({ page }) =>
 
 test('loads a CSV and supports the main browsing journey', async ({ page }) => {
   await page.goto('/csv-explorer.html');
-  await expect(page.locator('header')).toContainText('v1.2.0');
+  await expect(page.locator('header')).toContainText(`v${CSV_EXPLORER_VERSION}`);
   await page.locator('#csvFile').setInputFiles(path.join(process.cwd(), 'tests/fixtures/people.csv'));
 
   await expect(page.locator('#status')).toContainText('Loaded: people.csv');

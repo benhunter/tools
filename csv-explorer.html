@@ -68,7 +68,7 @@
 </head>
 <body>
   <header>
-    <h1>CSV Explorer <span class="version pill muted">v1.2.0</span></h1>
+    <h1>CSV Explorer <span id="appVersion" class="version pill muted"></span></h1>
     <div class="muted">Upload a CSV to list columns, compute stats, and browse/sort the entire dataset locally in your browser.</div>
   </header>
 
@@ -193,8 +193,10 @@ import {
   rowsToMarkdownTable,
   summarizeColumn
 } from './csv-explorer-core.js';
+import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
 
 (() => {
+  const appVersionEl = document.getElementById('appVersion');
   const fileInput = document.getElementById('csvFile');
   const nullTokensInput = document.getElementById('nullTokens');
   const recomputeBtn = document.getElementById('recomputeBtn');
@@ -254,6 +256,8 @@ import {
   // Table render state
   let tableRenderToken = 0;
   let currentVisibleRows = [];
+
+  appVersionEl.textContent = `v${CSV_EXPLORER_VERSION}`;
 
   fileInput.addEventListener('change', async (e) => {
     clearError();

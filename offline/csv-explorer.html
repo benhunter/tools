@@ -103,11 +103,6 @@
     </div>
   </section>
 
-  <section class="card" id="columnsCard" style="display:none;">
-    <strong>Columns</strong>
-    <ul id="columnsList"></ul>
-  </section>
-
   <section class="card" id="allStatsCard" style="display:none;">
     <div class="row">
       <strong style="margin-right:8px;">All column statistics</strong>
@@ -551,7 +546,6 @@ function rowsToJson(headers = [], rows = []) {
   const statsStatusEl = document.getElementById('statsStatus');
   const tableStatusEl = document.getElementById('tableStatus');
 
-  const columnsListEl = document.getElementById('columnsList');
   const allStatsWrapEl = document.getElementById('allStatsWrap');
 
   const profileSelectEl = document.getElementById('profileColumn');
@@ -633,7 +627,6 @@ function rowsToJson(headers = [], rows = []) {
       rowCountEl.textContent = String(rows.length);
       colCountEl.textContent = String(headers.length);
 
-      renderColumns(headers);
       initProfileSelect(headers);
       columnFilters = {};
       initColumnFilterControls(headers);
@@ -865,15 +858,6 @@ function rowsToJson(headers = [], rows = []) {
   function clearError() {
     messageEl.style.display = 'none';
     messageEl.textContent = '';
-  }
-
-  function renderColumns(headers) {
-    columnsListEl.innerHTML = '';
-    for (const h of headers) {
-      const li = document.createElement('li');
-      li.textContent = h;
-      columnsListEl.appendChild(li);
-    }
   }
 
   function initProfileSelect(headers) {

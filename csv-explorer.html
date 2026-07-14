@@ -266,6 +266,8 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
     copyMarkdownBtn.disabled = true;
     copyCsvBtn.disabled = true;
     copyJsonBtn.disabled = true;
+    copyCsvBtn.disabled = true;
+    copyJsonBtn.disabled = true;
     headers = [];
     rows = [];
     allStats = new Map();
@@ -731,7 +733,10 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
       setCopyStatus('Copy failed');
       showError(err?.message || String(err));
     } finally {
-      copyMarkdownBtn.disabled = headers.length === 0;
+      const disabled = headers.length === 0;
+      copyMarkdownBtn.disabled = disabled;
+      copyCsvBtn.disabled = disabled;
+      copyJsonBtn.disabled = disabled;
     }
   }
 

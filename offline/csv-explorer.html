@@ -601,6 +601,8 @@ const CSV_EXPLORER_VERSION = '1.3.0';
     copyMarkdownBtn.disabled = true;
     copyCsvBtn.disabled = true;
     copyJsonBtn.disabled = true;
+    copyCsvBtn.disabled = true;
+    copyJsonBtn.disabled = true;
     headers = [];
     rows = [];
     allStats = new Map();
@@ -1066,7 +1068,10 @@ const CSV_EXPLORER_VERSION = '1.3.0';
       setCopyStatus('Copy failed');
       showError(err?.message || String(err));
     } finally {
-      copyMarkdownBtn.disabled = headers.length === 0;
+      const disabled = headers.length === 0;
+      copyMarkdownBtn.disabled = disabled;
+      copyCsvBtn.disabled = disabled;
+      copyJsonBtn.disabled = disabled;
     }
   }
 

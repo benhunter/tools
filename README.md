@@ -44,11 +44,22 @@ must pass. Missing or unknown cell values are treated as empty strings.
 | Copy visible table as Markdown | Complete | Copies the table headers and currently visible rows as a Markdown table. |
 | Copy visible table as CSV | Complete | Copies the table headers and currently visible rows as CSV. |
 | Copy visible table as JSON | Complete | Copies the table headers and currently visible rows as JSON. |
-| Save visible table as CSV file | Planned | Saves the table headers and currently visible rows as a CSV file. |
+| Save visible table as CSV file | Planned | Download the current visible table, using the active search, filters, sort order, and row limit, as a CSV file with the table headers included. |
 | Filter shortcut buttons beside Column Values | Complete | Add include/exclude filter buttons beside each value in the "Column Profile - Top Values" table. The filter should be added to the current set of filters. |
-| Paste from CSV | Planned | Paste CSV content from the clipboard instead of opening a file to import data. |
-| Paste from Markdown table | Planned | Paste Markdown table content from the clipboard instead of opening a file to import data. |
-| Paste from JSON | Planned | Paste JSON content from the clipboard instead of opening a file to import data. Parse forgivingly; allow new columns liberally as they appear in objects. |
+| Paste from CSV | Planned | Replace the current data set with CSV content from the clipboard instead of requiring a file picker. Use the first row as headers and import the pasted rows as-is. |
+| Paste from Markdown table | Planned | Replace the current data set with a Markdown table from the clipboard instead of requiring a file picker. Parse the first table in the pasted text and use its header row. |
+| Paste from JSON | Planned | Replace the current data set with JSON content from the clipboard instead of requiring a file picker. Accept arrays of objects or a single object, add new columns as keys appear, and fill missing values with empty strings. |
+| URL encode settings | Planned | Serialize the current search, filters, sort, row limit, and selected profile into the URL hash so the page can be bookmarked or shared and later restored. |
+| Global table searches go into filters | Planned | Add a control that turns the current global search term into include filters for every visible column, rather than leaving it as a separate search-only state. |
+| Global filters and column filters are displayed together | Planned | Show search-derived filters and column filters in the same active-filter list so the user sees one combined filter state. |
+| Global table search excludes | Planned | Add a control that turns the current global search term into exclude filters for every visible column. |
+| Filters manually ordered | Planned | Let the user reorder column filters explicitly, and apply filters in that user-defined order instead of an implicit sort order. |
+| Filtered column values are sorted by frequency | Planned | Sort the "Column Profile - Top Values" table by frequency instead of lexicographically. |
+| Filtered column values are paginated | Planned | Add pagination controls to the "Column Profile - Top Values" table so the user can see more than the top 10 values. |
+| Filtered column values are searchable | Planned | Add a search box to the "Column Profile - Top Values" table so the user can find a specific value in a filtered column. |
+| Hide empty columns | Planned | Add a control to hide columns that have no non-empty values in the current filtered data set. |
+| Hide empty rows | Planned | Add a control to hide rows that have no non-empty values in the current filtered data set. |
+| Show/hide columns | Planned | Add a control to show or hide specific columns in the current filtered data set. |
 
 ## CSV Explorer Manual QA checklist
 

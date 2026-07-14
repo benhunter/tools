@@ -152,11 +152,9 @@
       <span class="pill muted">Showing <span id="shownCount">0 of 0</span></span>
       <span class="pill muted">Sort: <span id="dataSortLabel">none</span></span>
       <button id="copyMarkdownBtn" class="btn" type="button" disabled>Copy Markdown</button>
-      <span id="copyMarkdownStatus" class="pill muted" aria-live="polite">Nothing copied</span>
       <button id="copyCsvBtn" class="btn" type="button" disabled>Copy CSV</button>
-      <span id="copyCsvStatus" class="pill muted" aria-live="polite">Nothing copied</span>
       <button id="copyJsonBtn" class="btn" type="button" disabled>Copy JSON</button>
-      <span id="copyJsonStatus" class="pill muted" aria-live="polite">Nothing copied</span>
+      <span id="copyStatus" class="pill muted" aria-live="polite">Nothing copied</span>
     </div>
 
     <div class="filter-panel" id="columnFiltersPanel">
@@ -234,11 +232,9 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
   const shownCountEl = document.getElementById('shownCount');
   const dataSortLabelEl = document.getElementById('dataSortLabel');
   const copyMarkdownBtn = document.getElementById('copyMarkdownBtn');
-  const copyMarkdownStatusEl = document.getElementById('copyMarkdownStatus');
   const copyCsvBtn = document.getElementById('copyCsvBtn');
-  const copyCsvStatusEl = document.getElementById('copyCsvStatus');
   const copyJsonBtn = document.getElementById('copyJsonBtn');
-  const copyJsonStatusEl = document.getElementById('copyJsonStatus');
+  const copyStatusEl = document.getElementById('copyStatus');
 
   // In-memory dataset
   let headers = [];
@@ -706,44 +702,33 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
     addFilterBtn.disabled = filterColumnEl.disabled || !filterColumnEl.value || filterValueEl.value.trim().length === 0;
   }
 
-  function resetCopyMarkdownStatus() {
-    copyMarkdownStatusEl.textContent = headers.length ? 'Ready to copy' : 'Nothing copied';
-    copyMarkdownStatusEl.classList.add('muted');
-    copyMarkdownBtn.disabled = headers.length === 0;
-  }
-
-  function resetCopyCsvStatus() {
-    copyCsvStatusEl.textContent = headers.length ? 'Ready to copy' : 'Nothing copied';
-    copyCsvStatusEl.classList.add('muted');
-    copyCsvBtn.disabled = headers.length === 0;
-  }
-
-  function resetCopyJsonStatus() {
-    copyJsonStatusEl.textContent = headers.length ? 'Ready to copy' : 'Nothing copied';
-    copyJsonStatusEl.classList.add('muted');
-    copyJsonBtn.disabled = headers.length === 0;
+  function setCopyStatus(text, muted = false) {
+    copyStatusEl.textContent = text;
+    copyStatusEl.classList.toggle('muted', muted);
   }
 
   function resetCopyStatuses() {
-    resetCopyMarkdownStatus();
-    resetCopyCsvStatus();
-    resetCopyJsonStatus();
+    const disabled = headers.length === 0;
+    copyStatusEl.textContent = disabled ? 'Nothing copied' : 'Ready to copy';
+    copyStatusEl.classList.add('muted');
+    copyMarkdownBtn.disabled = disabled;
+    copyCsvBtn.disabled = disabled;
+    copyJsonBtn.disabled = disabled;
   }
 
   async function copyVisibleRowsAsMarkdown() {
     if (!headers.length) return;
 
     copyMarkdownBtn.disabled = true;
-    copyMarkdownStatusEl.textContent = 'Copying…';
-    copyMarkdownStatusEl.classList.remove('muted');
+    setCopyStatus('Copying…');
 
     try {
       const markdown = rowsToMarkdownTable(headers, currentVisibleRows);
       await writeClipboardText(markdown);
       const rowLabel = currentVisibleRows.length === 1 ? 'row' : 'rows';
-      copyMarkdownStatusEl.textContent = `Copied ${formatInt(currentVisibleRows.length)} ${rowLabel}`;
+      setCopyStatus(`Copied ${formatInt(currentVisibleRows.length)} ${rowLabel}`);
     } catch (err) {
-      copyMarkdownStatusEl.textContent = 'Copy failed';
+      setCopyStatus('Copy failed');
       showError(err?.message || String(err));
     } finally {
       copyMarkdownBtn.disabled = headers.length === 0;
@@ -754,16 +739,15 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
     if (!headers.length) return;
 
     copyCsvBtn.disabled = true;
-    copyCsvStatusEl.textContent = 'Copying…';
-    copyCsvStatusEl.classList.remove('muted');
+    setCopyStatus('Copying…');
 
     try {
       const csv = rowsToCsv(headers, currentVisibleRows);
       await writeClipboardText(csv);
       const rowLabel = currentVisibleRows.length === 1 ? 'row' : 'rows';
-      copyCsvStatusEl.textContent = `Copied ${formatInt(currentVisibleRows.length)} ${rowLabel}`;
+      setCopyStatus(`Copied ${formatInt(currentVisibleRows.length)} ${rowLabel}`);
     } catch (err) {
-      copyCsvStatusEl.textContent = 'Copy failed';
+      setCopyStatus('Copy failed');
       showError(err?.message || String(err));
     } finally {
       copyCsvBtn.disabled = headers.length === 0;
@@ -774,16 +758,15 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
     if (!headers.length) return;
 
     copyJsonBtn.disabled = true;
-    copyJsonStatusEl.textContent = 'Copying…';
-    copyJsonStatusEl.classList.remove('muted');
+    setCopyStatus('Copying…');
 
     try {
       const json = rowsToJson(headers, currentVisibleRows);
       await writeClipboardText(json);
       const rowLabel = currentVisibleRows.length === 1 ? 'row' : 'rows';
-      copyJsonStatusEl.textContent = `Copied ${formatInt(currentVisibleRows.length)} ${rowLabel}`;
+      setCopyStatus(`Copied ${formatInt(currentVisibleRows.length)} ${rowLabel}`);
     } catch (err) {
-      copyJsonStatusEl.textContent = 'Copy failed';
+      setCopyStatus('Copy failed');
       showError(err?.message || String(err));
     } finally {
       copyJsonBtn.disabled = headers.length === 0;

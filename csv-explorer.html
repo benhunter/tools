@@ -266,6 +266,10 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
     copyMarkdownBtn.disabled = true;
     copyCsvBtn.disabled = true;
     copyJsonBtn.disabled = true;
+    copyMarkdownBtn.disabled = true;
+    copyCsvBtn.disabled = true;
+    copyJsonBtn.disabled = true;
+    copyJsonBtn.disabled = true;
     copyCsvBtn.disabled = true;
     copyJsonBtn.disabled = true;
     headers = [];
@@ -755,13 +759,18 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
       setCopyStatus('Copy failed');
       showError(err?.message || String(err));
     } finally {
-      copyCsvBtn.disabled = headers.length === 0;
+      const disabled = headers.length === 0;
+      copyMarkdownBtn.disabled = disabled;
+      copyCsvBtn.disabled = disabled;
+      copyJsonBtn.disabled = disabled;
     }
   }
 
   async function copyVisibleRowsAsJson() {
     if (!headers.length) return;
 
+    copyMarkdownBtn.disabled = true;
+    copyCsvBtn.disabled = true;
     copyJsonBtn.disabled = true;
     setCopyStatus('Copying…');
 
@@ -774,7 +783,10 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
       setCopyStatus('Copy failed');
       showError(err?.message || String(err));
     } finally {
-      copyJsonBtn.disabled = headers.length === 0;
+      const disabled = headers.length === 0;
+      copyMarkdownBtn.disabled = disabled;
+      copyCsvBtn.disabled = disabled;
+      copyJsonBtn.disabled = disabled;
     }
   }
 

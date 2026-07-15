@@ -601,6 +601,10 @@ const CSV_EXPLORER_VERSION = '1.3.0';
     copyMarkdownBtn.disabled = true;
     copyCsvBtn.disabled = true;
     copyJsonBtn.disabled = true;
+    copyMarkdownBtn.disabled = true;
+    copyCsvBtn.disabled = true;
+    copyJsonBtn.disabled = true;
+    copyJsonBtn.disabled = true;
     copyCsvBtn.disabled = true;
     copyJsonBtn.disabled = true;
     headers = [];
@@ -1090,13 +1094,18 @@ const CSV_EXPLORER_VERSION = '1.3.0';
       setCopyStatus('Copy failed');
       showError(err?.message || String(err));
     } finally {
-      copyCsvBtn.disabled = headers.length === 0;
+      const disabled = headers.length === 0;
+      copyMarkdownBtn.disabled = disabled;
+      copyCsvBtn.disabled = disabled;
+      copyJsonBtn.disabled = disabled;
     }
   }
 
   async function copyVisibleRowsAsJson() {
     if (!headers.length) return;
 
+    copyMarkdownBtn.disabled = true;
+    copyCsvBtn.disabled = true;
     copyJsonBtn.disabled = true;
     setCopyStatus('Copying…');
 
@@ -1109,7 +1118,10 @@ const CSV_EXPLORER_VERSION = '1.3.0';
       setCopyStatus('Copy failed');
       showError(err?.message || String(err));
     } finally {
-      copyJsonBtn.disabled = headers.length === 0;
+      const disabled = headers.length === 0;
+      copyMarkdownBtn.disabled = disabled;
+      copyCsvBtn.disabled = disabled;
+      copyJsonBtn.disabled = disabled;
     }
   }
 

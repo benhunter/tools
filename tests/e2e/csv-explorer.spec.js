@@ -196,9 +196,11 @@ test('copies the currently visible table as Markdown', async ({ page, context })
   await addColumnFilter(page, { column: 'note', mode: 'exclude', value: 'plain' });
 
   await expectVisibleDataRows(page, ['Bob', 'Carol']);
+  await expect(page.locator('#copyMarkdownStatus, #copyCsvStatus, #copyJsonStatus')).toHaveCount(0);
+  await expect(page.locator('#copyStatus')).toHaveText('Ready to copy');
   await page.locator('#copyMarkdownBtn').click();
 
-  await expect(page.locator('#copyMarkdownStatus')).toHaveText('Copied 2 rows');
+  await expect(page.locator('#copyStatus')).toHaveText('Copied 2 rows');
   await expect.poll(async () => {
     const text = await page.evaluate(() => navigator.clipboard.readText());
     return text.replace(/\r\n/g, '\n');
@@ -221,7 +223,7 @@ test('copies the currently visible table as CSV', async ({ page, context }) => {
   await expectVisibleDataRows(page, ['Bob', 'Carol']);
   await page.locator('#copyCsvBtn').click();
 
-  await expect(page.locator('#copyCsvStatus')).toHaveText('Copied 2 rows');
+  await expect(page.locator('#copyStatus')).toHaveText('Copied 2 rows');
   await expect.poll(async () => {
     const text = await page.evaluate(() => navigator.clipboard.readText());
     return text.replace(/\r\n/g, '\n');
@@ -243,7 +245,7 @@ test('copies the currently visible table as JSON', async ({ page, context }) => 
   await expectVisibleDataRows(page, ['Bob', 'Carol']);
   await page.locator('#copyJsonBtn').click();
 
-  await expect(page.locator('#copyJsonStatus')).toHaveText('Copied 2 rows');
+  await expect(page.locator('#copyStatus')).toHaveText('Copied 2 rows');
   await expect.poll(async () => {
     const text = await page.evaluate(() => navigator.clipboard.readText());
     return text.replace(/\r\n/g, '\n');

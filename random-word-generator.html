@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <title>Random Word Generator</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0c0d0d;
+        --surface: #161818;
+        --text: #f3f2ed;
+        --muted: #a5a6a0;
+        --line: #303333;
+        --accent: #ff6849;
+        --accent-hover: #ff7d62;
+        --accent-text: #17100e;
+        --focus: rgba(255, 104, 73, 0.3);
+        --chip: #222525;
+        --shadow: 0 22px 70px rgba(0, 0, 0, 0.35);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          /* Keep the requested dark interface, with a slightly softer
+             contrast curve on light-configured displays. */
+          --bg: #111212;
+          --surface: #1a1c1c;
+          --text: #f5f4ef;
+          --muted: #afb0aa;
+          --line: #353838;
+          --chip: #252828;
+        }
+      }
+
+      * { box-sizing: border-box; }
+
+      html { min-height: 100%; }
+
+      body {
+        margin: 0;
+        min-width: 280px;
+        min-height: 100dvh;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "IBM Plex Sans", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button, select { font: inherit; }
+      button { -webkit-tap-highlight-color: transparent; }
+
+      .page {
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: max(24px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+      }
+
+      .generator {
+        width: min(100%, 680px);
+      }
+
+      .word-stage {
+        min-height: clamp(196px, 34vh, 290px);
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 42px 24px 34px;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .word-wrap {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .label {
+        margin: 0 0 20px;
+        color: var(--muted);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.74rem;
+        letter-spacing: 0.06em;
+      }
+
+      #word {
+        margin: 0;
+        font-size: clamp(2.8rem, 11vw, 6rem);
+        font-weight: 500;
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+        overflow-wrap: anywhere;
+      }
+
+      #word.changed, #definition.changed { animation: word-in 240ms ease-out; }
+
+      .definition {
+        max-width: 520px;
+        margin: 22px auto 0;
+        color: var(--muted);
+        font-size: clamp(0.94rem, 2vw, 1.05rem);
+        line-height: 1.55;
+      }
+
+      .part-of-speech {
+        margin-right: 0.45em;
+        color: var(--accent);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.78em;
+        font-style: italic;
+      }
+
+      @keyframes word-in {
+        from { opacity: 0; transform: translateY(7px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+        gap: 10px;
+        padding-top: 18px;
+      }
+
+      .field {
+        position: relative;
+        min-width: 0;
+      }
+
+      .field-label {
+        position: absolute;
+        top: 9px;
+        left: 14px;
+        z-index: 1;
+        color: var(--muted);
+        font-size: 0.68rem;
+        line-height: 1;
+        pointer-events: none;
+      }
+
+      select {
+        width: 100%;
+        min-height: 58px;
+        appearance: none;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 24px 38px 8px 13px;
+        background-color: var(--surface);
+        background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+        background-position: calc(100% - 17px) 27px, calc(100% - 12px) 27px;
+        background-size: 5px 5px, 5px 5px;
+        background-repeat: no-repeat;
+        color: var(--text);
+        font-weight: 500;
+        outline: none;
+      }
+
+      select:focus-visible, button:focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 2px;
+      }
+
+      .generate {
+        min-height: 58px;
+        border: 0;
+        border-radius: 8px;
+        padding: 0 24px;
+        background: var(--accent);
+        color: var(--accent-text);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 150ms ease, transform 100ms ease;
+      }
+
+      .generate:hover { background: var(--accent-hover); }
+      .generate:active { transform: translateY(1px); }
+
+      .utility {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding-top: 15px;
+      }
+
+      .hint {
+        margin: 0;
+        color: var(--muted);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.72rem;
+      }
+
+      .copy {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 0;
+        padding: 8px 2px 8px 10px;
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.8rem;
+        cursor: pointer;
+      }
+
+      .copy:hover { color: var(--text); }
+      .copy svg { width: 16px; height: 16px; stroke: currentColor; }
+
+      .recent {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding-top: 24px;
+      }
+
+      .recent.visible { display: flex; }
+
+      .recent-title {
+        margin-right: 4px;
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+
+      .recent-word {
+        border: 0;
+        border-radius: 999px;
+        padding: 7px 11px;
+        background: var(--chip);
+        color: var(--muted);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.72rem;
+        cursor: pointer;
+      }
+
+      .recent-word:hover { color: var(--text); }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: max(24px, env(safe-area-inset-bottom));
+        z-index: 10;
+        transform: translate(-50%, 12px);
+        padding: 10px 14px;
+        border-radius: 6px;
+        background: var(--text);
+        color: var(--bg);
+        font-size: 0.8rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 160ms ease, transform 160ms ease;
+        box-shadow: var(--shadow);
+      }
+
+      .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+      @media (max-width: 560px) {
+        .page { place-items: start center; padding-top: max(56px, env(safe-area-inset-top)); }
+        .word-stage { min-height: 230px; padding-inline: 8px; }
+        #word { font-size: clamp(2.65rem, 15vw, 4.5rem); }
+        .controls { grid-template-columns: 1fr 1fr; }
+        .generate { grid-column: 1 / -1; }
+        .utility { padding-top: 12px; }
+        .hint { display: none; }
+        .copy { margin-left: auto; }
+      }
+
+      @media (max-width: 350px) {
+        .controls { grid-template-columns: 1fr; }
+        .generate { grid-column: auto; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="generator" aria-label="Random word generator">
+        <div class="word-stage" aria-live="polite" aria-atomic="true">
+          <div class="word-wrap">
+            <p class="label">Your random word</p>
+            <h1 id="word">serendipity</h1>
+            <p class="definition" id="definition"><span class="part-of-speech">noun</span>The chance discovery of something valuable or delightful.</p>
+          </div>
+        </div>
+
+        <div class="controls" aria-label="Word options">
+          <label class="field">
+            <span class="field-label">Category</span>
+            <select id="category" aria-label="Word category">
+              <option value="all">All words</option>
+              <option value="noun">Nouns</option>
+              <option value="verb">Verbs</option>
+              <option value="adjective">Adjectives</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Length</span>
+            <select id="length" aria-label="Word length">
+              <option value="all">Any length</option>
+              <option value="short">Short · 3–5</option>
+              <option value="medium">Medium · 6–8</option>
+              <option value="long">Long · 9+</option>
+            </select>
+          </label>
+          <button class="generate" id="generate" type="button">New word</button>
+        </div>
+
+        <div class="utility">
+          <p class="hint">Press space for another</p>
+          <button class="copy" id="copy" type="button" aria-label="Copy current word">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="8" y="8" width="11" height="11" rx="2" stroke-width="1.8" />
+              <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+            <span>Copy</span>
+          </button>
+        </div>
+
+        <div class="recent" id="recent" aria-label="Recent words">
+          <span class="recent-title">Recent</span>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var words = [
+          ["anchor","noun"],["apple","noun"],["arch","noun"],["atlas","noun"],["beacon","noun"],["bloom","noun"],["bridge","noun"],["brook","noun"],["cabin","noun"],["canyon","noun"],["cedar","noun"],["cipher","noun"],["cloud","noun"],["comet","noun"],["compass","noun"],["coral","noun"],["cricket","noun"],["dawn","noun"],["delta","noun"],["drift","noun"],["ember","noun"],["feather","noun"],["field","noun"],["fjord","noun"],["forest","noun"],["galaxy","noun"],["garden","noun"],["harbor","noun"],["horizon","noun"],["island","noun"],["jewel","noun"],["lagoon","noun"],["lantern","noun"],["meadow","noun"],["meteor","noun"],["mirror","noun"],["mosaic","noun"],["nebula","noun"],["oasis","noun"],["orbit","noun"],["pebble","noun"],["prism","noun"],["raven","noun"],["ripple","noun"],["river","noun"],["shadow","noun"],["shelter","noun"],["signal","noun"],["spark","noun"],["summit","noun"],["tide","noun"],["timber","noun"],["valley","noun"],["velvet","noun"],["voyage","noun"],["willow","noun"],["window","noun"],["wonder","noun"],
+          ["adapt","verb"],["amble","verb"],["arrive","verb"],["awaken","verb"],["balance","verb"],["become","verb"],["build","verb"],["capture","verb"],["carve","verb"],["chase","verb"],["choose","verb"],["climb","verb"],["collect","verb"],["create","verb"],["dance","verb"],["discover","verb"],["drift","verb"],["echo","verb"],["explore","verb"],["gather","verb"],["glide","verb"],["grow","verb"],["imagine","verb"],["invent","verb"],["journey","verb"],["listen","verb"],["notice","verb"],["open","verb"],["pause","verb"],["ponder","verb"],["reach","verb"],["reflect","verb"],["roam","verb"],["savor","verb"],["shape","verb"],["shift","verb"],["sparkle","verb"],["stretch","verb"],["thrive","verb"],["trace","verb"],["uncover","verb"],["wander","verb"],["weave","verb"],["whisper","verb"],["wonder","verb"],
+          ["amber","adjective"],["ancient","adjective"],["bold","adjective"],["brave","adjective"],["bright","adjective"],["calm","adjective"],["clever","adjective"],["coastal","adjective"],["crisp","adjective"],["curious","adjective"],["daring","adjective"],["distant","adjective"],["electric","adjective"],["endless","adjective"],["gentle","adjective"],["golden","adjective"],["hidden","adjective"],["hushed","adjective"],["infinite","adjective"],["lively","adjective"],["luminous","adjective"],["mellow","adjective"],["midnight","adjective"],["nimble","adjective"],["open","adjective"],["patient","adjective"],["quiet","adjective"],["radiant","adjective"],["rare","adjective"],["restless","adjective"],["serene","adjective"],["silver","adjective"],["simple","adjective"],["steady","adjective"],["subtle","adjective"],["swift","adjective"],["tender","adjective"],["timeless","adjective"],["tranquil","adjective"],["vivid","adjective"],["warm","adjective"],["wild","adjective"],["wise","adjective"],["wondrous","adjective"]
+        ];
+
+        var definitions = {
+          noun: {
+            anchor: "A heavy object used to keep a vessel in place.",
+            apple: "The round, crisp fruit of an apple tree.",
+            arch: "A curved structure spanning an opening.",
+            atlas: "A book or collection of maps.",
+            beacon: "A light or signal that guides or warns.",
+            bloom: "A flower, especially one newly opened.",
+            bridge: "A structure carrying a path over an obstacle.",
+            brook: "A small stream.",
+            cabin: "A small, simple house or enclosed room.",
+            canyon: "A deep valley with steep sides.",
+            cedar: "An evergreen tree with aromatic wood.",
+            cipher: "A secret system of writing in code.",
+            cloud: "A visible mass of water droplets in the sky.",
+            comet: "An icy celestial body orbiting the sun.",
+            compass: "An instrument that shows direction.",
+            coral: "A hard substance formed by colonies of small sea animals.",
+            cricket: "A jumping insect known for its chirping sound.",
+            dawn: "The first light of day.",
+            delta: "A triangular area of sediment at a river’s mouth.",
+            drift: "A continuous, gradual movement from one place to another.",
+            ember: "A small, glowing piece of burning wood or coal.",
+            feather: "One of the light growths covering a bird.",
+            field: "An open area of land, often used for crops or pasture.",
+            fjord: "A long, narrow sea inlet between steep cliffs.",
+            forest: "A large area densely covered with trees.",
+            galaxy: "A vast system of stars, gas, and dust.",
+            garden: "A plot of ground where plants are cultivated.",
+            harbor: "A sheltered place where ships can anchor.",
+            horizon: "The line where the earth or sea appears to meet the sky.",
+            island: "A piece of land surrounded by water.",
+            jewel: "A precious stone, especially one cut and polished.",
+            lagoon: "A shallow body of water separated from the sea.",
+            lantern: "A portable lamp with a protective covering.",
+            meadow: "A field of grass and wildflowers.",
+            meteor: "A streak of light caused by space rock entering the atmosphere.",
+            mirror: "A reflective surface that forms an image.",
+            mosaic: "A picture or pattern made from small pieces.",
+            nebula: "A cloud of gas and dust in space.",
+            oasis: "A fertile place in a desert where water is found.",
+            orbit: "The curved path of an object around another body.",
+            pebble: "A small, smooth stone.",
+            prism: "A transparent solid that refracts light.",
+            raven: "A large black bird of the crow family.",
+            ripple: "A small wave or series of waves on a surface.",
+            river: "A large natural stream of flowing water.",
+            shadow: "A dark shape made when light is blocked.",
+            shelter: "A place that gives protection from weather or danger.",
+            signal: "A gesture, sound, or sign used to convey information.",
+            spark: "A tiny, glowing particle thrown off by fire.",
+            summit: "The highest point of a hill or mountain.",
+            tide: "The regular rise and fall of the sea.",
+            timber: "Wood prepared for building or carpentry.",
+            valley: "Low land between hills or mountains.",
+            velvet: "A soft fabric with a dense, smooth pile.",
+            voyage: "A long journey, especially by sea or through space.",
+            willow: "A tree with narrow leaves and flexible branches.",
+            window: "An opening fitted with glass to admit light or air.",
+            wonder: "A feeling of amazement caused by something extraordinary."
+          },
+          verb: {
+            adapt: "To adjust to new conditions.",
+            amble: "To walk at a slow, relaxed pace.",
+            arrive: "To reach a place at the end of a journey.",
+            awaken: "To wake up or cause to become aware.",
+            balance: "To keep or bring into a steady position.",
+            become: "To begin to be.",
+            build: "To make something by joining parts together.",
+            capture: "To take possession or control of something.",
+            carve: "To cut a shape or design into a material.",
+            chase: "To pursue in order to catch.",
+            choose: "To select from two or more possibilities.",
+            climb: "To move upward using the feet and often the hands.",
+            collect: "To bring things together into one place.",
+            create: "To bring something new into existence.",
+            dance: "To move rhythmically to music.",
+            discover: "To find or learn something for the first time.",
+            drift: "To be carried slowly by a current or breeze.",
+            echo: "To repeat a sound by reflection.",
+            explore: "To travel through or examine in order to learn.",
+            gather: "To bring together or collect.",
+            glide: "To move smoothly and continuously.",
+            grow: "To increase in size or develop over time.",
+            imagine: "To form a picture or idea in the mind.",
+            invent: "To create something that did not exist before.",
+            journey: "To travel from one place to another.",
+            listen: "To pay attention to sound.",
+            notice: "To become aware of something.",
+            open: "To move or arrange so that access is possible.",
+            pause: "To stop briefly before continuing.",
+            ponder: "To think about something carefully.",
+            reach: "To arrive at or extend as far as something.",
+            reflect: "To think deeply or carefully about something.",
+            roam: "To move about without a fixed route.",
+            savor: "To enjoy something slowly and fully.",
+            shape: "To give a particular form to something.",
+            shift: "To move or change from one position to another.",
+            sparkle: "To shine with small flashes of light.",
+            stretch: "To extend or make longer or wider.",
+            thrive: "To grow, develop, or succeed well.",
+            trace: "To follow or discover the course of something.",
+            uncover: "To remove a covering or reveal what was hidden.",
+            wander: "To walk or travel without a fixed destination.",
+            weave: "To form by interlacing threads or strands.",
+            whisper: "To speak very softly.",
+            wonder: "To feel curiosity or doubt about something."
+          },
+          adjective: {
+            amber: "Having a warm yellow-orange color.",
+            ancient: "Belonging to the very distant past.",
+            bold: "Confident, courageous, and willing to take risks.",
+            brave: "Ready to face danger or difficulty with courage.",
+            bright: "Giving off or reflecting much light.",
+            calm: "Peaceful and free from strong emotion or disturbance.",
+            clever: "Quick to understand, learn, or devise ideas.",
+            coastal: "Relating to or located near a coast.",
+            crisp: "Firm, fresh, and pleasantly brittle.",
+            curious: "Eager to know or learn something.",
+            daring: "Adventurous and unafraid to take risks.",
+            distant: "Far away in space or time.",
+            electric: "Relating to electricity or charged with excitement.",
+            endless: "Having or seeming to have no end.",
+            gentle: "Mild, kind, or soft in action.",
+            golden: "Made of gold or having its warm yellow color.",
+            hidden: "Kept out of sight or not easily found.",
+            hushed: "Very quiet and still.",
+            infinite: "Without any limit or end.",
+            lively: "Full of energy and enthusiasm.",
+            luminous: "Giving off or reflecting light.",
+            mellow: "Pleasantly smooth, soft, or rich.",
+            midnight: "Occurring at or resembling the middle of the night.",
+            nimble: "Quick and light in movement or thought.",
+            open: "Not closed, blocked, or restricted.",
+            patient: "Able to wait or endure difficulty calmly.",
+            quiet: "Making little or no noise.",
+            radiant: "Shining brightly or expressing great happiness.",
+            rare: "Uncommon and not often found.",
+            restless: "Unable to relax or remain still.",
+            serene: "Calm, peaceful, and untroubled.",
+            silver: "Having the shiny gray-white color of silver.",
+            simple: "Easy to understand or do; not complicated.",
+            steady: "Firm, regular, and not likely to change suddenly.",
+            subtle: "Delicate or not immediately obvious.",
+            swift: "Moving or happening quickly.",
+            tender: "Gentle, caring, or easily affected.",
+            timeless: "Not affected by the passage of time.",
+            tranquil: "Free from disturbance; calm.",
+            vivid: "Producing clear, powerful images or impressions.",
+            warm: "Having or giving a comfortable degree of heat.",
+            wild: "Living or growing in a natural, untamed state.",
+            wise: "Showing experience, knowledge, and sound judgment.",
+            wondrous: "Inspiring wonder or delight."
+          }
+        };
+
+        var wordEl = document.getElementById("word");
+        var definitionEl = document.getElementById("definition");
+        var categoryEl = document.getElementById("category");
+        var lengthEl = document.getElementById("length");
+        var generateEl = document.getElementById("generate");
+        var copyEl = document.getElementById("copy");
+        var recentEl = document.getElementById("recent");
+        var toastEl = document.getElementById("toast");
+        var history = [];
+        var currentEntry = ["serendipity", "noun", "The chance discovery of something valuable or delightful."];
+        var toastTimer;
+
+        function inLength(word, setting) {
+          if (setting === "short") return word.length >= 3 && word.length <= 5;
+          if (setting === "medium") return word.length >= 6 && word.length <= 8;
+          if (setting === "long") return word.length >= 9;
+          return true;
+        }
+
+        function randomIndex(max) {
+          if (window.crypto && window.crypto.getRandomValues) {
+            var values = new Uint32Array(1);
+            var limit = Math.floor(4294967296 / max) * max;
+            do { window.crypto.getRandomValues(values); } while (values[0] >= limit);
+            return values[0] % max;
+          }
+          return Math.floor(Math.random() * max);
+        }
+
+        function definitionFor(entry) {
+          return entry[2] || (definitions[entry[1]] && definitions[entry[1]][entry[0]]) || "Definition unavailable.";
+        }
+
+        function setEntry(entry) {
+          currentEntry = entry;
+          wordEl.textContent = entry[0];
+          definitionEl.textContent = "";
+          var part = document.createElement("span");
+          part.className = "part-of-speech";
+          part.textContent = entry[1];
+          definitionEl.appendChild(part);
+          definitionEl.appendChild(document.createTextNode(definitionFor(entry)));
+          replayAnimation();
+        }
+
+        function renderRecent() {
+          var old = recentEl.querySelectorAll("button");
+          for (var i = 0; i < old.length; i += 1) old[i].remove();
+          history.forEach(function (item) {
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "recent-word";
+            button.textContent = item[0];
+            button.addEventListener("click", function () { setEntry(item); });
+            recentEl.appendChild(button);
+          });
+          recentEl.classList.toggle("visible", history.length > 0);
+        }
+
+        function replayAnimation() {
+          wordEl.classList.remove("changed");
+          definitionEl.classList.remove("changed");
+          void wordEl.offsetWidth;
+          wordEl.classList.add("changed");
+          definitionEl.classList.add("changed");
+        }
+
+        function generate() {
+          var category = categoryEl.value;
+          var length = lengthEl.value;
+          var pool = words.filter(function (item) {
+            return (category === "all" || item[1] === category) && inLength(item[0], length) && (item[0] !== currentEntry[0] || item[1] !== currentEntry[1]);
+          });
+          if (!pool.length) {
+            pool = words.filter(function (item) {
+              return (category === "all" || item[1] === category) && inLength(item[0], length);
+            });
+          }
+          if (!pool.length) return;
+          var next = pool[randomIndex(pool.length)];
+          if (currentEntry[0] !== "serendipity") {
+            history = [currentEntry].concat(history.filter(function (item) {
+              return item[0] !== currentEntry[0] || item[1] !== currentEntry[1];
+            })).slice(0, 5);
+          }
+          setEntry(next);
+          renderRecent();
+        }
+
+        function showToast(message) {
+          clearTimeout(toastTimer);
+          toastEl.textContent = message;
+          toastEl.classList.add("show");
+          toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 1400);
+        }
+
+        function copyWord() {
+          var value = wordEl.textContent;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(value).then(function () { showToast("Copied “" + value + "”"); }, function () { showToast("Couldn’t copy"); });
+            return;
+          }
+          var area = document.createElement("textarea");
+          area.value = value;
+          area.setAttribute("readonly", "");
+          area.style.position = "fixed";
+          area.style.opacity = "0";
+          document.body.appendChild(area);
+          area.select();
+          try { document.execCommand("copy"); showToast("Copied “" + value + "”"); }
+          catch (error) { showToast("Couldn’t copy"); }
+          area.remove();
+        }
+
+        generateEl.addEventListener("click", generate);
+        copyEl.addEventListener("click", copyWord);
+        categoryEl.addEventListener("change", generate);
+        lengthEl.addEventListener("change", generate);
+        document.addEventListener("keydown", function (event) {
+          var tag = document.activeElement && document.activeElement.tagName;
+          if (event.code === "Space" && tag !== "SELECT" && tag !== "BUTTON") {
+            event.preventDefault();
+            generate();
+          }
+        });
+      }());
+    </script>
+  </body>
+</html>

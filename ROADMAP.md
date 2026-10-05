@@ -29,18 +29,19 @@ Preserve the project's lightweight, local-first design and standalone HTML tools
 
 ### Update landing-page tests
 
-- [ ] Update `tests/e2e/csv-explorer.spec.js` to expect the current `Tools` heading and linked tool titles rather than the old `Open` links.
-- [ ] Cover all five tool cards and their destinations.
+- [x] Update `tests/e2e/csv-explorer.spec.js` to expect the current `Tools` heading and linked tool titles rather than the old `Open` links.
+- [x] Cover all five tool cards and their destinations.
 
 ### Broaden automated validation
 
 - [ ] Run browser tests in CI alongside the Node suite.
 - [ ] Add pull-request validation; keep deployment restricted to the appropriate branch.
-- [ ] Add browser coverage for File Vault storage, downloads, and deletion.
+- [x] Add browser coverage for File Vault storage, downloads, and deletion, including persistence across reloads and hostile filenames.
 - [ ] Add JSON Explorer import, search, sorting, and export coverage.
 - [ ] Test word-generator category and length filters.
 - [ ] Test toolkit draft saving, restoration, and clearing.
-- [ ] Cover malformed files, unusual column names, denied clipboard access, and unavailable browser storage.
+- [x] Cover special-property column names in CSV imports, filters, and exports, plus JSON array-table keys.
+- [ ] Cover malformed files, denied clipboard access, and unavailable browser storage.
 - [ ] Make local-link validation a permanent automated check, particularly for directory reorganizations.
 
 ## 3. Storage and browser API reliability
@@ -99,12 +100,19 @@ Preserve the project's lightweight, local-first design and standalone HTML tools
 
 ## Recommended implementation order
 
-1. Filename injection protection.
-2. CSV data-integrity fixes and JSON root-value correctness.
-3. Updated tests and CI coverage.
-4. Storage and clipboard reliability.
-5. Accessibility, performance, maintainability, and documentation improvements.
+1. Remaining CSV data-integrity fixes and JSON root-value correctness.
+2. Broader test coverage and CI validation.
+3. Storage and clipboard reliability.
+4. Accessibility, performance, maintainability, and documentation improvements.
 
 ## Review baseline
 
-At review time, all 45 Node tests passed and local HTML links resolved. Browser tests were not run because dependencies were not installed. Passing existing tests does not cover the gaps listed above.
+At review time, all 45 Node tests passed and local HTML links resolved. Browser tests were not run because dependencies were not installed.
+
+## Latest verification
+
+- All 48 Node tests passed after the security fixes, including offline-build consistency checks.
+- All 16 end-to-end tests passed after updating the landing-page test; no tests were excluded.
+- Security regression coverage includes hostile filenames, File Vault downloads/deletion, prototype-sensitive CSV headers in both regular and offline builds, and JSON array-table keys.
+
+Passing existing tests does not cover the remaining gaps listed above.

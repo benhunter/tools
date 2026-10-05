@@ -31,13 +31,23 @@ async function addColumnFilter(page, { column, mode = 'include', value }) {
 test('landing page lists available HTML apps', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: 'Scripts Browser Tools' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Open CSV Explorer' })).toHaveAttribute('href', './offline/csv-explorer.html');
+  await expect(page.getByRole('heading', { name: 'Tools', level: 1, exact: true })).toBeVisible();
+  const tools = [
+    ['CSV Explorer', './offline/csv-explorer.html'],
+    ['File Manager', './file-manager.html'],
+    ['JSON Explorer', './json-explorer.html'],
+    ['Random Word Generator', './random-word-generator.html'],
+    ["Creative Thinker's Toolkit", './creative-thinkers-toolkit/index.html']
+  ];
+  for (const [name, href] of tools) {
+    const titleLink = page.getByRole('heading', { name, level: 2, exact: true })
+      .getByRole('link', { name, exact: true });
+    await expect(titleLink).toBeVisible();
+    await expect(titleLink).toHaveAttribute('href', href);
+  }
   await expect(page.getByText('Want to use it without internet?')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Download single-file version' })).toHaveAttribute('download', 'csv-explorer.html');
   await expect(page.getByRole('link', { name: 'Download single-file version' })).toHaveAttribute('href', './offline/csv-explorer.html');
-  await expect(page.getByRole('link', { name: 'Open File Manager' })).toHaveAttribute('href', './file-manager.html');
-  await expect(page.getByRole('link', { name: 'Open JSON Explorer' })).toHaveAttribute('href', './json-explorer.html');
 });
 
 test('generated offline CSV Explorer opens from a file URL', async ({ page }) => {

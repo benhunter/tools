@@ -247,7 +247,7 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
 
   // Sort state for Entire Table
   let dataSort = { key: null, dir: 'asc' }; // key is column name or null
-  let columnFilters = {}; // column -> [{ mode: 'include'|'exclude', value }]
+  let columnFilters = Object.create(null); // untrusted column names -> filters
 
   // Table render state
   let tableRenderToken = 0;
@@ -301,7 +301,7 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
       colCountEl.textContent = String(headers.length);
 
       initProfileSelect(headers);
-      columnFilters = {};
+      columnFilters = Object.create(null);
       initColumnFilterControls(headers);
 
       summaryCard.style.display = '';
@@ -383,7 +383,7 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
   copyJsonBtn.addEventListener('click', copyVisibleRowsAsJson);
   clearFiltersBtn.addEventListener('click', () => {
     if (activeFilterCount() === 0) return;
-    columnFilters = {};
+    columnFilters = Object.create(null);
     renderActiveFilters();
     applyAndRenderTable();
   });
@@ -643,7 +643,7 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
   }
 
   function orderedColumnFiltersForPipeline() {
-    const ordered = {};
+    const ordered = Object.create(null);
     for (const column of orderedColumnNamesWithFilters()) {
       ordered[column] = orderedFiltersForColumn(column).map(({ filter }) => filter);
     }

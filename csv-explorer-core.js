@@ -150,9 +150,8 @@ export function parseCsv(text, delim) {
     const fields = readRow();
     if (fields.every(f => f.trim().length === 0)) continue;
 
-    const obj = {};
-    for (let c = 0; c < headers.length; c++) obj[headers[c]] = fields[c] ?? '';
-    rows.push(obj);
+    // Define own data properties, including headers named __proto__.
+    rows.push(Object.fromEntries(headers.map((header, c) => [header, fields[c] ?? ''])));
   }
 
   return { headers, rows };
@@ -330,13 +329,9 @@ export function rowsToJson(headers = [], rows = []) {
   if (!Array.isArray(headers) || headers.length === 0) return '';
 
   const safeRows = Array.isArray(rows) ? rows : [];
-  const outputRows = safeRows.map(row => {
-    const outputRow = {};
-    for (const header of headers) {
-      outputRow[header] = row?.[header] ?? '';
-    }
-    return outputRow;
-  });
+  const outputRows = safeRows.map(row => Object.fromEntries(
+    headers.map(header => [header, row != null && Object.hasOwn(row, header) ? (row[header] ?? '') : ''])
+  ));
 
   return JSON.stringify(outputRows, null, 2);
 }

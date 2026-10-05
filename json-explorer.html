@@ -874,9 +874,10 @@
 
       const columns = collectObjectColumns(selected.value);
       const rows = selected.value.map((item, index) => {
-        const row = { "#": index };
+        const row = Object.create(null);
+        row["#"] = index;
         for (const col of columns) {
-          row[col] = item[col];
+          row[col] = Object.hasOwn(item, col) ? item[col] : undefined;
         }
         return row;
       });

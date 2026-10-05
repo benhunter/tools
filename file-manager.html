@@ -279,16 +279,31 @@
             const sizeStr = formatSize(fileRecord.size);
             const dateStr = fileRecord.created.toLocaleDateString() + ' ' + fileRecord.created.toLocaleTimeString();
 
-            li.innerHTML = `
-                <div class="file-info">
-                    <span class="file-name">${fileRecord.name}</span>
-                    <span class="file-meta">${sizeStr} • ${dateStr}</span>
-                </div>
-                <div class="actions">
-                    <a href="${fileUrl}" download="${fileRecord.name}" class="btn-download">Download</a>
-                    <button class="btn-danger" onclick="deleteFile(${id})">Delete</button>
-                </div>
-            `;
+            // Filenames are untrusted data, never HTML or executable attributes.
+            const info = document.createElement('div');
+            info.className = 'file-info';
+            const name = document.createElement('span');
+            name.className = 'file-name';
+            name.textContent = fileRecord.name;
+            const meta = document.createElement('span');
+            meta.className = 'file-meta';
+            meta.textContent = `${sizeStr} • ${dateStr}`;
+            info.append(name, meta);
+
+            const actions = document.createElement('div');
+            actions.className = 'actions';
+            const download = document.createElement('a');
+            download.className = 'btn-download';
+            download.href = fileUrl;
+            download.download = fileRecord.name;
+            download.textContent = 'Download';
+            const remove = document.createElement('button');
+            remove.className = 'btn-danger';
+            remove.type = 'button';
+            remove.textContent = 'Delete';
+            remove.addEventListener('click', () => deleteFile(id));
+            actions.append(download, remove);
+            li.append(info, actions);
 
             container.appendChild(li);
         }

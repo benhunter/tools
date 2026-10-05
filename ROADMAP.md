@@ -1,21 +1,23 @@
 # Roadmap
 
-Preserve the project's lightweight, local-first design and standalone HTML tools. These recommendations come from the project review; all items below are pending.
+Preserve the project's lightweight, local-first design and standalone HTML tools. These recommendations come from the project review; checked items are complete.
 
 ## 1. Security and data integrity
 
 ### Safe File Vault rendering
 
-- [ ] Replace filename interpolation into `innerHTML` in `file-manager.html` with DOM APIs.
-- [ ] Set filenames through `textContent` and the download link's `download` property.
-- [ ] Add regression tests for filenames containing HTML and attribute-special characters.
+- [x] Replace filename interpolation into `innerHTML` in `file-manager.html` with DOM APIs.
+- [x] Set filenames through `textContent` and the download link's `download` property.
+- [x] Add regression tests for filenames containing HTML and attribute-special characters.
 
 ### Correct CSV column handling
 
 - [ ] Preserve column positions when headers are blank. Currently, `a,,c` with `1,2,3` incorrectly assigns `2` to `c`.
 - [ ] Generate unique names for blank/duplicate headers, or reject ambiguous headers with a clear error rather than silently overwriting values.
-- [ ] Use prototype-safe dictionaries for rows and filters, including headers such as `__proto__` and `constructor`.
-- [ ] Add regression tests for blank, duplicate, and special-property headers.
+- [x] Use prototype-safe property creation and dictionaries for CSV rows, exports, and filters, including headers such as `__proto__` and `constructor`.
+- [x] Harden JSON array-table rows against prototype mutation and inherited cell values.
+- [x] Add regression tests for special-property headers and JSON keys.
+- [ ] Add regression tests for blank and duplicate headers.
 
 ### Valid JSON root values
 

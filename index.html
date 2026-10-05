@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Scripts Browser Tools</title>
+  <title>Tools</title>
   <style>
     :root { color-scheme: light dark; }
     body {
@@ -38,22 +38,21 @@
     }
     .offline-use p { margin-bottom: 6px; }
     a { color: LinkText; }
-    .open-link { font-weight: 700; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
   </style>
 </head>
 <body>
   <header>
-    <h1>Scripts Browser Tools</h1>
-    <p class="muted">Local browser apps served by <code>pnpm start</code>. Choose an app below.</p>
+    <h1>Tools</h1>
+    <p class="muted">Do one thing well.</p>
+    <p class="muted"><sub><a href="https://en.wikipedia.org/wiki/Unix_philosophy">The Unix Philosphy</a></sub></p>
   </header>
 
   <main>
     <section class="grid" aria-label="Available HTML apps">
       <article class="card">
-        <h2>CSV Explorer</h2>
+        <h2><a href="./offline/csv-explorer.html">CSV Explorer</a></h2>
         <p class="muted">Load a local CSV file, browse rows, search, sort, and calculate per-column statistics.</p>
-        <a class="open-link" href="./offline/csv-explorer.html">Open CSV Explorer</a>
         <div class="offline-use">
           <p class="muted">Want to use it without internet?</p>
           <a href="./offline/csv-explorer.html" download="csv-explorer.html">Download single-file version</a>
@@ -61,21 +60,23 @@
       </article>
 
       <article class="card">
-        <h2>File Manager</h2>
+        <h2><a href="./file-manager.html">File Manager</a></h2>
         <p class="muted">Standalone browser file vault for storing, downloading, and deleting files with IndexedDB.</p>
-        <a class="open-link" href="./file-manager.html">Open File Manager</a>
       </article>
 
       <article class="card">
-        <h2>JSON Explorer</h2>
+        <h2><a href="./json-explorer.html">JSON Explorer</a></h2>
         <p class="muted">Inspect JSON with searchable tree and table views.</p>
-        <a class="open-link" href="./json-explorer.html">Open JSON Explorer</a>
       </article>
 
       <article class="card">
-        <h2>Random Word Generator</h2>
+        <h2><a href="./random-word-generator.html">Random Word Generator</a></h2>
         <p class="muted">Generate random words by part of speech and length, with quick copy and recent history.</p>
-        <a class="open-link" href="./random-word-generator.html">Open Random Word Generator</a>
+      </article>
+
+      <article class="card">
+        <h2><a href="./creative-thinkers-toolkit/index.html">Creative Thinker's Toolkit</a></h2>
+        <p class="muted">A personal creativity toolkit to help you reframe, diverge, explore, or converge through short guided exercises.</p>
       </article>
     </section>
   </main>

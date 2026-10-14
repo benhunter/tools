@@ -177,6 +177,11 @@
       </div>
     </div>
 
+    <div id="headerRenames" hidden role="status" style="margin-bottom:12px;">
+      <strong>Column headers adjusted</strong>
+      <p>These names are also used in filters, profiles, and exports.</p>
+      <ul id="headerRenameList" style="white-space:pre-wrap;"></ul>
+    </div>
     <div class="table-wrap" id="dataWrap" style="max-height:650px;"></div>
   </section>
 
@@ -270,7 +275,7 @@ function countDelimsOutsideQuotes(line, delim) {
 
 function parseCsv(text, delim) {
   const rows = [];
-  let i = 0;
+  let i = text.charCodeAt(0) === 0xFEFF ? 1 : 0;
   const len = text.length;
 
   const readField = () => {
@@ -305,14 +310,17 @@ function parseCsv(text, delim) {
   const readRow = () => {
     const fields = [];
     while (i < len) {
-      if (i === 0 && text.charCodeAt(0) === 0xFEFF) i++;
       const field = readField();
       fields.push(field);
 
       if (i >= len) break;
 
       const ch = text[i];
-      if (ch === delim) { i++; continue; }
+      if (ch === delim) {
+        i++;
+        if (i === len) fields.push('');
+        continue;
+      }
 
       if (ch === '\r') i++;
       if (text[i] === '\n') i++;
@@ -321,8 +329,25 @@ function parseCsv(text, delim) {
     return fields;
   };
 
-  const headerFields = readRow().map(h => h.trim());
-  const headers = headerFields.filter(h => h.length > 0);
+  const headerFields = readRow();
+  // Reserve even later source names so a repair never displaces an original.
+  const reserved = new Set(headerFields.filter(name => name.trim()));
+  const seen = new Set();
+  const renames = [];
+  const headers = headerFields.map((original, index) => {
+    const blank = !original.trim();
+    if (!blank && !seen.has(original)) {
+      seen.add(original);
+      return original;
+    }
+    const base = blank ? `Column ${index + 1}` : original;
+    let resolved = base;
+    let suffix = 2;
+    while (reserved.has(resolved)) resolved = `${base} (${suffix++})`;
+    reserved.add(resolved);
+    renames.push({ position: index + 1, original, resolved, reason: blank ? 'blank' : 'duplicate' });
+    return resolved;
+  });
 
   while (i < len) {
     if (text[i] === '\n' || text[i] === '\r') {
@@ -338,7 +363,7 @@ function parseCsv(text, delim) {
     rows.push(Object.fromEntries(headers.map((header, c) => [header, fields[c] ?? ''])));
   }
 
-  return { headers, rows };
+  return { headers, rows, renames };
 }
 
 function normalizeFilterText(value) {
@@ -521,7 +546,7 @@ function rowsToJson(headers = [], rows = []) {
 }
 
 // Inlined from csv-explorer-version.js for file:// offline use.
-const CSV_EXPLORER_VERSION = '1.3.0';
+const CSV_EXPLORER_VERSION = '1.3.1';
 
 (() => {
   const appVersionEl = document.getElementById('appVersion');
@@ -559,6 +584,8 @@ const CSV_EXPLORER_VERSION = '1.3.0';
   const activeFilterCountEl = document.getElementById('activeFilterCount');
   const activeFiltersEl = document.getElementById('activeFilters');
   const dataWrapEl = document.getElementById('dataWrap');
+  const headerRenamesEl = document.getElementById('headerRenames');
+  const headerRenameListEl = document.getElementById('headerRenameList');
   const shownCountEl = document.getElementById('shownCount');
   const dataSortLabelEl = document.getElementById('dataSortLabel');
   const copyMarkdownBtn = document.getElementById('copyMarkdownBtn');
@@ -602,6 +629,8 @@ const CSV_EXPLORER_VERSION = '1.3.0';
     copyJsonBtn.disabled = true;
     copyCsvBtn.disabled = true;
     copyJsonBtn.disabled = true;
+    headerRenamesEl.hidden = true;
+    headerRenameListEl.replaceChildren();
     headers = [];
     rows = [];
     allStats = new Map();
@@ -623,6 +652,12 @@ const CSV_EXPLORER_VERSION = '1.3.0';
       const parsed = parseCsv(text, currentDelimiter);
       headers = parsed.headers;
       rows = parsed.rows;
+      for (const { position, original, resolved, reason } of parsed.renames) {
+        const item = document.createElement('li');
+        item.textContent = `Column ${position}: ${reason === 'blank' ? 'blank' : original} → ${resolved} (${reason})`;
+        headerRenameListEl.appendChild(item);
+      }
+      headerRenamesEl.hidden = parsed.renames.length === 0;
 
       if (!headers.length) throw new Error('No headers detected. Ensure the first row contains column names.');
 

@@ -86,7 +86,7 @@ export function countDelimsOutsideQuotes(line, delim) {
 
 export function parseCsv(text, delim) {
   const rows = [];
-  let i = 0;
+  let i = text.charCodeAt(0) === 0xFEFF ? 1 : 0;
   const len = text.length;
 
   const readField = () => {
@@ -121,14 +121,17 @@ export function parseCsv(text, delim) {
   const readRow = () => {
     const fields = [];
     while (i < len) {
-      if (i === 0 && text.charCodeAt(0) === 0xFEFF) i++;
       const field = readField();
       fields.push(field);
 
       if (i >= len) break;
 
       const ch = text[i];
-      if (ch === delim) { i++; continue; }
+      if (ch === delim) {
+        i++;
+        if (i === len) fields.push('');
+        continue;
+      }
 
       if (ch === '\r') i++;
       if (text[i] === '\n') i++;
@@ -137,8 +140,25 @@ export function parseCsv(text, delim) {
     return fields;
   };
 
-  const headerFields = readRow().map(h => h.trim());
-  const headers = headerFields.filter(h => h.length > 0);
+  const headerFields = readRow();
+  // Reserve even later source names so a repair never displaces an original.
+  const reserved = new Set(headerFields.filter(name => name.trim()));
+  const seen = new Set();
+  const renames = [];
+  const headers = headerFields.map((original, index) => {
+    const blank = !original.trim();
+    if (!blank && !seen.has(original)) {
+      seen.add(original);
+      return original;
+    }
+    const base = blank ? `Column ${index + 1}` : original;
+    let resolved = base;
+    let suffix = 2;
+    while (reserved.has(resolved)) resolved = `${base} (${suffix++})`;
+    reserved.add(resolved);
+    renames.push({ position: index + 1, original, resolved, reason: blank ? 'blank' : 'duplicate' });
+    return resolved;
+  });
 
   while (i < len) {
     if (text[i] === '\n' || text[i] === '\r') {
@@ -154,7 +174,7 @@ export function parseCsv(text, delim) {
     rows.push(Object.fromEntries(headers.map((header, c) => [header, fields[c] ?? ''])));
   }
 
-  return { headers, rows };
+  return { headers, rows, renames };
 }
 
 export function normalizeFilterText(value) {

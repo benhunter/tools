@@ -177,6 +177,11 @@
       </div>
     </div>
 
+    <div id="headerRenames" hidden role="status" style="margin-bottom:12px;">
+      <strong>Column headers adjusted</strong>
+      <p>These names are also used in filters, profiles, and exports.</p>
+      <ul id="headerRenameList" style="white-space:pre-wrap;"></ul>
+    </div>
     <div class="table-wrap" id="dataWrap" style="max-height:650px;"></div>
   </section>
 
@@ -229,6 +234,8 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
   const activeFilterCountEl = document.getElementById('activeFilterCount');
   const activeFiltersEl = document.getElementById('activeFilters');
   const dataWrapEl = document.getElementById('dataWrap');
+  const headerRenamesEl = document.getElementById('headerRenames');
+  const headerRenameListEl = document.getElementById('headerRenameList');
   const shownCountEl = document.getElementById('shownCount');
   const dataSortLabelEl = document.getElementById('dataSortLabel');
   const copyMarkdownBtn = document.getElementById('copyMarkdownBtn');
@@ -272,6 +279,8 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
     copyJsonBtn.disabled = true;
     copyCsvBtn.disabled = true;
     copyJsonBtn.disabled = true;
+    headerRenamesEl.hidden = true;
+    headerRenameListEl.replaceChildren();
     headers = [];
     rows = [];
     allStats = new Map();
@@ -293,6 +302,12 @@ import { CSV_EXPLORER_VERSION } from './csv-explorer-version.js';
       const parsed = parseCsv(text, currentDelimiter);
       headers = parsed.headers;
       rows = parsed.rows;
+      for (const { position, original, resolved, reason } of parsed.renames) {
+        const item = document.createElement('li');
+        item.textContent = `Column ${position}: ${reason === 'blank' ? 'blank' : original} → ${resolved} (${reason})`;
+        headerRenameListEl.appendChild(item);
+      }
+      headerRenamesEl.hidden = parsed.renames.length === 0;
 
       if (!headers.length) throw new Error('No headers detected. Ensure the first row contains column names.');
 

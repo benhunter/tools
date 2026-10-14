@@ -27,6 +27,10 @@ Preserve the project's lightweight, local-first design and standalone HTML tools
 
 ## 2. Tests and continuous integration
 
+### Built in demo CSV file
+
+- [ ] Include a demo CSV "file" that can be loaded instead of clicking Browse to provide a file.
+
 ### Update landing-page tests
 
 - [x] Update `tests/e2e/csv-explorer.spec.js` to expect the current `Tools` heading and linked tool titles rather than the old `Open` links.

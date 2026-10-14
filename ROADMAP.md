@@ -12,12 +12,12 @@ Preserve the project's lightweight, local-first design and standalone HTML tools
 
 ### Correct CSV column handling
 
-- [ ] Preserve column positions when headers are blank. Currently, `a,,c` with `1,2,3` incorrectly assigns `2` to `c`.
-- [ ] Generate unique names for blank/duplicate headers, or reject ambiguous headers with a clear error rather than silently overwriting values.
+- [x] Preserve column positions when headers are blank, including leading, middle, and trailing blanks.
+- [x] Generate unique names only for blank/duplicate headers, preserving existing names and showing a conditional rename list.
 - [x] Use prototype-safe property creation and dictionaries for CSV rows, exports, and filters, including headers such as `__proto__` and `constructor`.
 - [x] Harden JSON array-table rows against prototype mutation and inherited cell values.
 - [x] Add regression tests for special-property headers and JSON keys.
-- [ ] Add regression tests for blank and duplicate headers.
+- [x] Add regression tests for blank and duplicate headers.
 
 ### Valid JSON root values
 
@@ -111,8 +111,9 @@ At review time, all 45 Node tests passed and local HTML links resolved. Browser 
 
 ## Latest verification
 
-- All 48 Node tests passed after the security fixes, including offline-build consistency checks.
-- All 16 end-to-end tests passed after updating the landing-page test; no tests were excluded.
+- All 53 Node tests passed after the CSV header-integrity fixes, including offline-build consistency checks.
+- All 20 end-to-end tests passed; no tests were excluded.
+- CSV header coverage includes minimal collision-safe renaming, exact nonblank whitespace, terminal blank headers, export/reimport stability, and conditional text-only rename notices in regular and offline builds.
 - Security regression coverage includes hostile filenames, File Vault downloads/deletion, prototype-sensitive CSV headers in both regular and offline builds, and JSON array-table keys.
 
 Passing existing tests does not cover the remaining gaps listed above.

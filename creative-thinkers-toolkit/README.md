@@ -15,3 +15,8 @@ Open `index.html` in a modern browser, then choose a tool. Each app is an indepe
 - One special random-stimulus generator
 
 To reset a tool's saved draft, use its Clear button.
+
+# Roadmap
+
+- [ ] Document sources and inspiration.
+- [ ] Add tools from https://openpracticelibrary.com/
